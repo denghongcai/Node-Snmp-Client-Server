@@ -1,4 +1,12 @@
 {
-  "name": "nw-demo",
-  "main": "index.html"
+  "name": "Node-SNMP-Manager",
+  "main": "index.html",
+  "description": "Simple SNMP Manager.",
+  "version": "0.1",
+  "window": {
+    "toolbar": false,
+    "frame": false,
+    "position": "center",
+    "resizable": false
+  }
 }

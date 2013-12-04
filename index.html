@@ -1,10 +1,87 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Hello World!</title>
+  	<meta charset="utf-8">
+    <title>Node-SNMP-Manager</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap -->
+    <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <style type="text/css">
+      body {
+        padding-top: 40px;
+        padding-bottom: 40px;
+        background-color: #f5f5f5;
+      }
+
+      .form-signin {
+        max-width: 300px;
+        padding: 19px 29px 29px;
+        margin: 0 auto 20px;
+        background-color: #fff;
+        border: 1px solid #e5e5e5;
+        -webkit-border-radius: 5px;
+           -moz-border-radius: 5px;
+                border-radius: 5px;
+        -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.05);
+           -moz-box-shadow: 0 1px 2px rgba(0,0,0,.05);
+                box-shadow: 0 1px 2px rgba(0,0,0,.05);
+      }
+      .form-signin .form-signin-heading,
+      .form-signin .checkbox {
+        margin-bottom: 10px;
+      }
+      .form-signin input[type="text"],
+      .form-signin input[type="password"] {
+        font-size: 16px;
+        height: auto;
+        margin-bottom: 15px;
+        padding: 7px 9px;
+      }
+	  .close-btn {
+	  	position: absolute;
+		top: 5px;
+		right: 5px;
+		z-index: 1000;
+	  }
+    </style>
   </head>
   <body>
-    <h1>Hello World!</h1>
-    We are using node.js <script>document.write(process.version)</script>.
+  	<div class="close-btn close">
+		<span class="glyphicon glyphicon-remove" id="close-btn"></span>
+  	</div>
+    <div class="container">
+      <form class="form-signin" action="function.html" method="get">
+        <h2 class="form-signin-heading">SNMP Agent Info</h2>
+        <input type="text" class="input-block-level" name="ip" placeholder="IP address (IPv4)" maxlength="16">
+        <input type="text" class="input-block-level" name="usrname" placeholder="Username (Option)">
+        <input type="password" class="input-block-level" name="passwd" placeholder="Password (Option)">
+        <button class="btn btn-large btn-primary" type="submit" disabled>Connect</button>
+      </form>
+    </div>
+    <script src="js/jquery-1.9.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script type="text/javascript">
+    	var gui = require('nw.gui');
+    	var win = gui.Window.get();
+    	win.width = 445;
+    	win.height = 490;
+    	$(function(){
+    		var patternip = /^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])(\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])){3}$/;
+    		$("[name='ip']").keyup(function() {
+    			if(!patternip.test($("[name='ip']").val()))
+    			{
+    				$("[name='ip']").css('border-color', 'red');	
+    			}
+    			else
+    			{
+    				$("[name='ip']").removeAttr('style');
+    				$("[type='submit']").removeAttr('disabled');
+    			}
+    		});
+    		$("#close-btn").click(function(){
+    			win.close();
+    		})
+    	});
+    </script>
   </body>
 </html>

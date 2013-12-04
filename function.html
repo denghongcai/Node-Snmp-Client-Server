@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  	<meta charset="utf-8">
+    <title>Node-SNMP-Manager</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap -->
+    <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <link href="css/jquery.treegrid.css" rel="stylesheet">
+  </head>
+  <body>
+    <nav class="navbar navbar-default navbar-static-top" role="navigation">
+      <div class="container">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="#">Node-SNMP-Manager</a>
+      </div>
+      <p class="navbar-text">Easy for use.</p>
+      <p class="navbar-text" id="current-ip"></p>
+      <div class="pull-right navbar-text">
+        <span class="glyphicon glyphicon-remove close" id="close-btn"></span>
+      </div>
+      </div>
+    </nav>
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-2" roles="navigation">
+          <ul class="list-group">
+            <li class="list-group-item" id="op-get">Get</li>
+            <li class="list-group-item" id="op-getnext">GetNext</li>
+            <li class="list-group-item" id="op-getall">GetALL</li>
+            <li class="list-group-item" id="op-set">Set</li>
+          </ul>
+        </div>
+        <div class="col-sm-10">
+          <p id="op-resp"></p>
+        </div>
+      </div>
+    </div>
+    <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
+    <script type="text/javascript" src="js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/jquery.treegrid.js"></script>
+    <script type="text/javascript" src="js/jquery.treegrid.bootstrap3.js"></script>
+    <script type="text/javascript">
+      var gui = require('nw.gui');
+      var win = gui.Window.get();
+      win.width = 800;
+      win.height = 400;
+      $(function(){
+        $("#close-btn").click(function(){
+          win.close();
+        })
+        $.getUrlParam = function(name)
+        {
+          var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+          var r = window.location.search.substr(1).match(reg);
+          if (r!=null) 
+            return unescape(r[2]); 
+          return null;
+        }
+        $(".tree").treegrid(); //初始化mib
+        ip = $.getUrlParam('ip');
+        $("#current-ip").text('Current Agent IP:'+ ip);
+      })
+    </script>
+    <script type="text/javascript" src="js/main.js"></script>
+  </body>
+</html>
