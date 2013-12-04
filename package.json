@@ -6,7 +6,9 @@
   "window": {
     "toolbar": false,
     "frame": false,
-    "position": "center",
-    "resizable": false
-  }
+    "resizable": false,
+    "width": 900,
+    "height": 500
+  },
+  "chromium-args": "--enable-threaded-compositing"
 }

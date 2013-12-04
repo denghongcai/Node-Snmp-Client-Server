@@ -8,7 +8,7 @@
     <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
     <link href="css/jquery.treegrid.css" rel="stylesheet">
   </head>
-  <body>
+  <body style="padding-bottom: 70px;">
     <nav class="navbar navbar-default navbar-static-top" role="navigation">
       <div class="container">
       <div class="navbar-header">
@@ -21,30 +21,76 @@
       </div>
       </div>
     </nav>
-    <div class="container">
+    <div class="container" style="width: 850px !important;">
       <div class="row">
-        <div class="col-sm-2" roles="navigation">
-          <ul class="list-group">
-            <li class="list-group-item" id="op-get">Get</li>
-            <li class="list-group-item" id="op-getnext">GetNext</li>
-            <li class="list-group-item" id="op-getall">GetALL</li>
-            <li class="list-group-item" id="op-set">Set</li>
-          </ul>
+          <div class="col-sm-4" style="height:355px; overflow:auto;">
+          <table class="tree" style="white-space:nowrap;" id="mibtree">
+            
+          </table>
         </div>
-        <div class="col-sm-10">
-          <p id="op-resp"></p>
+        <div width="10%"></div>
+        <div class="col-sm-8" id="main-content" style="height:355px; overflow:auto;">
+          <table class="table table-bordered table-hover table-condensed">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Value</th>
+              </tr>
+            </thead>
+            <tbody id="op-resp">
+              <tr>
+                <td>test</td>
+                <td>test</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
+      <nav class="navbar navbar-default navbar-fixed-bottom" role="navigation">
+        <div class="navbar-form navbar-left">
+          <div class="form-group">
+            <input type="text" class="form-control" placeholder="Oid" id="oid">
+          </div>
+          <div class="form-group">
+            <input type="text" class="form-control" placeholder="Value" id="setvalue">
+          </div>
+        </div>
+        <ul class="nav navbar-nav navbar-right">
+          <li><a href="#" class="mutex" id="current-state" disabled>Ready to operate...</a></li>
+            <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Operation <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li><a href="#" id="op-get">Get</a></li>
+              <li><a href="#" id="op-getnext">GetNext</a></li>
+              <li><a href="#" id="op-getsubtree">GetSubtree</a></li>
+              <li><a href="#" id="op-set">Set</a></li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
     </div>
     <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
     <script type="text/javascript" src="js/bootstrap.min.js"></script>
     <script type="text/javascript" src="js/jquery.treegrid.js"></script>
     <script type="text/javascript" src="js/jquery.treegrid.bootstrap3.js"></script>
     <script type="text/javascript">
+      document.onkeydown = fkey;
       var gui = require('nw.gui');
       var win = gui.Window.get();
-      win.width = 800;
-      win.height = 400;
+      win.width = 900;
+      win.height = 500;
+      win.setPosition("center");
+      var wasPressed = false;
+      function fkey(e){
+        e = e || window.event;
+        if( wasPressed ) return; 
+        if (e.keyCode == 116) {
+          win.reload();
+        }
+        if (e.keyCode == 123) {
+          win.showDevTools();
+        }
+      }
       $(function(){
         $("#close-btn").click(function(){
           win.close();
@@ -57,9 +103,41 @@
             return unescape(r[2]); 
           return null;
         }
-        $(".tree").treegrid(); //初始化mib
+
+        var recurmib = function(value, i)
+        {
+          if(i == 1) {
+            $("#mibtree").append('<tr class="treegrid-1" oid=' + value.oid + 
+              '><td>' + value.name + 
+              '</td></tr>');
+            for (var j in value.children)
+            { 
+              if(value.children[j] != null)
+                recurmib(value.children[j], i + 1);
+            }
+          }
+          else {
+            $("#mibtree").append('<tr class="treegrid-' + i + ' treegrid-parent-' + (i - 1) +'" oid=' + value.oid + 
+              '><td>' + value.name + 
+              '</td></tr>');
+            for (var j in value.children)
+            { 
+              if(value.children[j] != null)
+                recurmib(value.children[j], i + 1);
+            }
+          }
+        }
+        //初始化mib2树
+        var mib = require("./js/mib2.js");
+        recurmib(mib.mib2, 1);
+  
+        $(".tree").treegrid({initialState: "collapsed"}); //初始化mib
         ip = $.getUrlParam('ip');
         $("#current-ip").text('Current Agent IP:'+ ip);
+        $("#oid").keypress(function(event) {
+          if(event.keyCode == 13)
+            $("#op-get").click();
+        });
       })
     </script>
     <script type="text/javascript" src="js/main.js"></script>
