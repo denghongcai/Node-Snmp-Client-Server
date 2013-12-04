@@ -13,7 +13,7 @@ $(function(){
 			if(err)
 				console.log("Failed!");
 			else
-				$("#op-resp").append('<tr><td>test</td><td>' + resp[0].value + '</td></tr>');
+				$("#op-resp").append('<tr><td>' + resp[0].oid + '</td><td>' + resp[0].value + '</td></tr>');
 			$("#main-content").scrollTop(100000);
 			$("#current-state").text('Ready to operate...')
 		})
@@ -25,7 +25,7 @@ $(function(){
 			if(err)
 				console.log("Failed!");
 			else {
-				$("#op-resp").append('<tr><td>test</td><td>' + resp[0].value + '</td></tr>');
+				$("#op-resp").append('<tr><td>' + resp[0].oid + '</td><td>' + resp[0].value + '</td></tr>');
 				$("#oid").val('.' + resp[0].oid.toString().split(',')
 					.filter(function (s) { return s.length > 0; })
 					.map(function (s) { return parseInt(s, 10); }).toString().replace(/,/g, '.'));
@@ -42,7 +42,7 @@ $(function(){
 				console.log("Failed!");
 			else {
 				resp.forEach(function (vb) {
-            		$("#op-resp").append('<tr><td>test</td><td>' + vb.value + '</td></tr>');
+            		$("#op-resp").append('<tr><td>' + vb.oid + '</td><td>' + vb.value + '</td></tr>');
 					$("#main-content").scrollTop(100000);
         		});
 				$("#current-state").text('Ready to operate...')

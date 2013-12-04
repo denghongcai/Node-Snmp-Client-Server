@@ -50,7 +50,7 @@
 .jstree.jstree-proton a {
   position: relative;
   top: -6px;
-  max-width: 85%;
+  /*max-width: 85%;*/
   display: inline-block;
   height: 24px;
   padding: 4px 6px 3px;

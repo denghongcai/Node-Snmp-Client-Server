@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Bootstrap -->
     <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
-    <link href="css/jquery.treegrid.css" rel="stylesheet">
   </head>
   <body style="padding-bottom: 70px;">
     <nav class="navbar navbar-default navbar-static-top" role="navigation">
@@ -23,10 +22,12 @@
     </nav>
     <div class="container" style="width: 850px !important;">
       <div class="row">
-          <div class="col-sm-4" style="height:355px; overflow:auto;">
-          <table class="tree" style="white-space:nowrap;" id="mibtree">
-            
-          </table>
+        <div class="col-sm-4" style="height:355px; overflow:auto;">
+          <div id="jstreecontainer">
+            <ul id="mibtree" style="white-space: nowrap;">
+              
+            </ul>
+          </div>
         </div>
         <div width="10%"></div>
         <div class="col-sm-8" id="main-content" style="height:355px; overflow:auto;">
@@ -38,10 +39,6 @@
               </tr>
             </thead>
             <tbody id="op-resp">
-              <tr>
-                <td>test</td>
-                <td>test</td>
-              </tr>
             </tbody>
           </table>
         </div>
@@ -71,8 +68,9 @@
     </div>
     <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
     <script type="text/javascript" src="js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="js/jquery.treegrid.js"></script>
-    <script type="text/javascript" src="js/jquery.treegrid.bootstrap3.js"></script>
+    <script type="text/javascript" src="_lib/jquery.hotkeys.js"></script>
+    <script type="text/javascript" src="_lib/jquery.cookie.js"></script>
+    <script type="text/javascript" src="js/jquery.jstree.js"></script>
     <script type="text/javascript">
       document.onkeydown = fkey;
       var gui = require('nw.gui');
@@ -81,6 +79,7 @@
       win.height = 500;
       win.setPosition("center");
       var wasPressed = false;
+      treenum = 1;
       function fkey(e){
         e = e || window.event;
         if( wasPressed ) return; 
@@ -104,34 +103,66 @@
           return null;
         }
 
-        var recurmib = function(value, i)
+        var recurmib = function(value, i, t)
         {
           if(i == 1) {
-            $("#mibtree").append('<tr class="treegrid-1" oid=' + value.oid + 
-              '><td>' + value.name + 
-              '</td></tr>');
+            $("#mibtree").append('<li id="phtml_1"  oid=' + value.oid + 
+              '><a href="#">' + value.name + 
+              '</a></li>');
+            var test = false;
             for (var j in value.children)
             { 
-              if(value.children[j] != null)
-                recurmib(value.children[j], i + 1);
+              if(value.children[j] != null) {
+                test = true;
+                recurmib(value.children[j], ++treenum, i);
+              }
+            }
+            if(test){
+              var content = $("#mibtree").html();
+              $("#mibtree").html(content.substring(0, content.indexOf("</a>") + 4)
+               + '<ul>' + content.substring(content.indexOf("</a>") + 4) + '</ul>');
             }
           }
           else {
-            $("#mibtree").append('<tr class="treegrid-' + i + ' treegrid-parent-' + (i - 1) +'" oid=' + value.oid + 
-              '><td>' + value.name + 
-              '</td></tr>');
+            $("#phtml_" + t ).append('<li id="phtml_' + i + '" oid=' + value.oid + 
+              '><a href="#">' + value.name + 
+              '</a></li>');
+            var test = false;
             for (var j in value.children)
             { 
-              if(value.children[j] != null)
-                recurmib(value.children[j], i + 1);
+              if(value.children[j] != null) {
+                test = true;
+                recurmib(value.children[j], ++treenum, i);
+              }
+            }
+            if(test) {
+              var content = $("#phtml_" + i ).html();
+              $("#phtml_" + i ).html(content.substring(0, content.indexOf("</a>") + 4)
+               + '<ul>' + content.substring(content.indexOf("</a>") + 4) + '</ul>');
             }
           }
         }
+        
         //初始化mib2树
         var mib = require("./js/mib2.js");
-        recurmib(mib.mib2, 1);
+        recurmib(mib.mib2, 1, 0);
+        
+        
+        $("#jstreecontainer").jstree({
+            "plugins" : ["themes","html_data","ui","crrm","hotkeys"],
+            "core" : {
+              "animation" : 100,
+              "initially_open" : [ "phtml_1" ]
+            },
+            "themes" : {
+              "theme" : "proton"
+            }
+        }).bind("select_node.jstree", function (event, data) {
+            $("#oid").val('.' + data.rslt.obj.attr("oid"));
+        }); 
+        
+        $("#jstreecontainer li")
   
-        $(".tree").treegrid({initialState: "collapsed"}); //初始化mib
         ip = $.getUrlParam('ip');
         $("#current-ip").text('Current Agent IP:'+ ip);
         $("#oid").keypress(function(event) {
