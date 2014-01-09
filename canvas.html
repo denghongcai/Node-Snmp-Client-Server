@@ -1,0 +1,84 @@
+<!DOCTYPE HTML>
+<html>
+<script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
+<script src="http://echarts.baidu.com/doc/example/www2/js/echarts-plain-map.js"></script>
+<body>
+<div id="main" style="height:300px;border:1px solid #ccc;padding:10px;width:500px"></div>
+<script type="text/javascript">
+    $(function () {
+        var option = {
+            animationDuration: 200,
+            toolbox: {
+                show : false
+            },
+            xAxis : [
+                {
+                    type : 'category',
+                    data : (function(){
+                        var res = [];
+                        var len = 50;
+                        while (len--) {
+                            res.push(len);
+                        }
+                        return res;
+                    })()
+                }
+            ],
+            yAxis : [
+                {
+                    type : 'value',
+                    axisLabel : {
+                        formatter: '{value}%'
+                    },
+                    splitArea : {show : true},
+                    min : 0,
+                    max : 100
+
+                }
+            ],
+            series : [
+                {
+                    type:'line',
+                    smooth: true,
+                    symbol: "none",
+                    itemStyle: {
+                        normal: {
+                            lineStyle: {
+                                shadowColor : 'rgba(0,0,0,0.4)'
+                            }
+                        }
+                    },
+                    data:(function(){
+                        var res = [];
+                        var len = 50;
+                        while (len--) {
+                            res.push(Math.round(Math.random() * 100));
+                        }
+                        return res;
+                    })()
+                }
+            ]
+        };
+        var myChart = echarts.init(document.getElementById('main'));
+        var lastData = 21;
+        var axisData;
+        var timeTicket = setInterval(function(){
+            lastData += Math.random() * ((Math.round(Math.random() * 10) % 2) == 0 ? 1 : -1);
+            lastData = lastData.toFixed(1) - 0;
+            axisData = (new Date()).toLocaleTimeString().replace(/^\D*/,'');
+
+            // 动态数据接口 addData
+            myChart.addData([
+                [
+                    0,        // 系列索引
+                    Math.round(Math.random() * 100), // 新增数据
+                    true,     // 新增数据是否从队列头部插入
+                    false     // 是否增加队列长度，false则自定删除原有数据，队头插入删队尾，队尾插入删队头
+                ]
+            ]);
+        }, 1000);
+        myChart.setOption(option);
+    }());
+</script>
+</body>
+</html>

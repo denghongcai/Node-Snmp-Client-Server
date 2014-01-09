@@ -1,176 +1,184 @@
 <!DOCTYPE html>
 <html>
-  <head>
-  	<meta charset="utf-8">
+<head>
+    <meta charset="utf-8">
     <title>Node-SNMP-Manager</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Bootstrap -->
     <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
-  </head>
-  <body style="padding-bottom: 70px;">
-    <nav class="navbar navbar-default navbar-static-top" role="navigation">
-      <div class="container">
-      <div class="navbar-header">
-        <a class="navbar-brand" href="#">Node-SNMP-Manager</a>
-      </div>
-      <p class="navbar-text">Easy for use.</p>
-      <p class="navbar-text" id="current-ip"></p>
-      <div class="pull-right navbar-text">
-        <span class="glyphicon glyphicon-remove close" id="close-btn"></span>
-      </div>
-      </div>
-    </nav>
-    <div class="container" style="width: 850px !important;">
-      <div class="row">
+    <style type="text/css">
+        .navbar-brand {
+            -webkit-app-region: drag
+        }
+    </style>
+</head>
+<body style="padding-bottom: 70px;">
+<nav class="navbar navbar-default navbar-static-top" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="#">Node-SNMP-Manager</a>
+        </div>
+        <p class="navbar-text">Easy for use.</p>
+
+        <p class="navbar-text" id="current-ip"></p>
+
+        <div class="pull-right navbar-text">
+            <span class="glyphicon glyphicon-remove close" id="close-btn"></span>
+        </div>
+    </div>
+</nav>
+<div class="container" style="width: 850px !important;">
+    <div class="row">
         <div class="col-sm-4" style="height:355px; overflow:auto;">
-          <div id="jstreecontainer">
-            <ul id="mibtree" style="white-space: nowrap;">
-              
-            </ul>
-          </div>
+            <div id="jstreecontainer">
+                <ul id="mibtree" style="white-space: nowrap;">
+
+                </ul>
+            </div>
         </div>
         <div width="10%"></div>
         <div class="col-sm-8" id="main-content" style="height:355px; overflow:auto;">
-          <table class="table table-bordered table-hover table-condensed">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Value</th>
-              </tr>
-            </thead>
-            <tbody id="op-resp">
-            </tbody>
-          </table>
+            <table class="table table-bordered table-hover table-condensed">
+                <thead>
+                <tr>
+                    <th>OID</th>
+                    <th>Value</th>
+                </tr>
+                </thead>
+                <tbody id="op-resp">
+                </tbody>
+            </table>
         </div>
-      </div>
-      <nav class="navbar navbar-default navbar-fixed-bottom" role="navigation">
+    </div>
+    <nav class="navbar navbar-default navbar-fixed-bottom" role="navigation">
         <div class="navbar-form navbar-left">
-          <div class="form-group">
-            <input type="text" class="form-control" placeholder="Oid" id="oid">
-          </div>
-          <div class="form-group">
-            <input type="text" class="form-control" placeholder="Value" id="setvalue">
-          </div>
+            <div class="form-group">
+                <input type="text" class="form-control" placeholder="Oid" id="oid">
+            </div>
+            <div class="form-group">
+                <input type="text" class="form-control" placeholder="Value" id="setvalue">
+            </div>
         </div>
         <ul class="nav navbar-nav navbar-right">
-          <li><a href="#" class="mutex" id="current-state" disabled>Ready to operate...</a></li>
+            <li><a href="#" class="mutex" id="current-state" disabled>Ready to operate...</a></li>
             <li class="dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Operation <b class="caret"></b></a>
-            <ul class="dropdown-menu">
-              <li><a href="#" id="op-get">Get</a></li>
-              <li><a href="#" id="op-getnext">GetNext</a></li>
-              <li><a href="#" id="op-getsubtree">GetSubtree</a></li>
-              <li><a href="#" id="op-set">Set</a></li>
-            </ul>
-          </li>
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Operation <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                    <li><a href="#" id="op-get">Get</a></li>
+                    <li><a href="#" id="op-getnext">GetNext</a></li>
+                    <li><a href="#" id="op-getsubtree">GetSubtree</a></li>
+                    <li><a href="#" id="op-set">Set</a></li>
+                </ul>
+            </li>
         </ul>
-      </nav>
-    </div>
-    <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
-    <script type="text/javascript" src="js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="_lib/jquery.hotkeys.js"></script>
-    <script type="text/javascript" src="_lib/jquery.cookie.js"></script>
-    <script type="text/javascript" src="js/jquery.jstree.js"></script>
-    <script type="text/javascript">
-      document.onkeydown = fkey;
-      var gui = require('nw.gui');
-      var win = gui.Window.get();
-      win.width = 900;
-      win.height = 500;
-      win.setPosition("center");
-      var wasPressed = false;
-      treenum = 1;
-      function fkey(e){
+    </nav>
+</div>
+<script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
+<script type="text/javascript" src="js/bootstrap.min.js"></script>
+<script type="text/javascript" src="_lib/jquery.hotkeys.js"></script>
+<script type="text/javascript" src="_lib/jquery.cookie.js"></script>
+<script type="text/javascript" src="js/jquery.jstree.js"></script>
+<script type="text/javascript" src="js/echarts-plain-map.js"></script>
+<script type="text/javascript">
+    document.onkeydown = fkey;
+    var gui = require('nw.gui');
+    var win = gui.Window.get();
+    win.width = 900;
+    win.height = 500;
+    win.setPosition("center");
+    var wasPressed = false;
+    treenum = 1;
+    function fkey(e) {
         e = e || window.event;
-        if( wasPressed ) return; 
+        if (wasPressed) return;
         if (e.keyCode == 116) {
-          win.reload();
+            win.reload();
         }
         if (e.keyCode == 123) {
-          win.showDevTools();
+            win.showDevTools();
         }
-      }
-      $(function(){
-        $("#close-btn").click(function(){
-          win.close();
+    }
+    $(function () {
+        $("#close-btn").click(function () {
+            win.close();
         })
-        $.getUrlParam = function(name)
-        {
-          var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
-          var r = window.location.search.substr(1).match(reg);
-          if (r!=null) 
-            return unescape(r[2]); 
-          return null;
+        $.getUrlParam = function (name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+            var r = window.location.search.substr(1).match(reg);
+            if (r != null)
+                return unescape(r[2]);
+            return null;
         }
 
-        var recurmib = function(value, i, t)
-        {
-          if(i == 1) {
-            $("#mibtree").append('<li id="phtml_1"  oid=' + value.oid + 
-              '><a href="#">' + value.name + 
-              '</a></li>');
-            var test = false;
-            for (var j in value.children)
-            { 
-              if(value.children[j] != null) {
-                test = true;
-                recurmib(value.children[j], ++treenum, i);
-              }
+        var recurmib = function (value, i, t) {
+            if (i == 1) {
+                $("#mibtree").append('<li id="phtml_1"  oid=' + value.oid +
+                        '><a href="#">' + value.name +
+                        '</a></li>');
+                var test = false;
+                for (var j in value.children) {
+                    if (value.children[j] != null) {
+                        test = true;
+                        recurmib(value.children[j], ++treenum, i);
+                    }
+                }
+                if (test) {
+                    var content = $("#mibtree").html();
+                    $("#mibtree").html(content.substring(0, content.indexOf("</a>") + 4)
+                            + '<ul>' + content.substring(content.indexOf("</a>") + 4) + '</ul>');
+                }
             }
-            if(test){
-              var content = $("#mibtree").html();
-              $("#mibtree").html(content.substring(0, content.indexOf("</a>") + 4)
-               + '<ul>' + content.substring(content.indexOf("</a>") + 4) + '</ul>');
+            else {
+                $("#phtml_" + t).append('<li id="phtml_' + i + '" oid=' + value.oid +
+                        '><a href="#">' + value.name +
+                        '</a></li>');
+                var test = false;
+                for (var j in value.children) {
+                    if (value.children[j] != null) {
+                        test = true;
+                        recurmib(value.children[j], ++treenum, i);
+                    }
+                }
+                if (test) {
+                    var content = $("#phtml_" + i).html();
+                    $("#phtml_" + i).html(content.substring(0, content.indexOf("</a>") + 4)
+                            + '<ul>' + content.substring(content.indexOf("</a>") + 4) + '</ul>');
+                }
             }
-          }
-          else {
-            $("#phtml_" + t ).append('<li id="phtml_' + i + '" oid=' + value.oid + 
-              '><a href="#">' + value.name + 
-              '</a></li>');
-            var test = false;
-            for (var j in value.children)
-            { 
-              if(value.children[j] != null) {
-                test = true;
-                recurmib(value.children[j], ++treenum, i);
-              }
-            }
-            if(test) {
-              var content = $("#phtml_" + i ).html();
-              $("#phtml_" + i ).html(content.substring(0, content.indexOf("</a>") + 4)
-               + '<ul>' + content.substring(content.indexOf("</a>") + 4) + '</ul>');
-            }
-          }
         }
-        
+
         //初始化mib2树
-        var mib = require("./js/mib2.js");
+        mib = require("./js/mib2.js");
         recurmib(mib.mib2, 1, 0);
-        
-        
+
+
         $("#jstreecontainer").jstree({
-            "plugins" : ["themes","html_data","ui","crrm","hotkeys"],
-            "core" : {
-              "animation" : 100,
-              "initially_open" : [ "phtml_1" ]
+            "plugins": ["themes", "html_data", "ui", "crrm", "hotkeys"],
+            "core": {
+                "animation": 100,
+                "initially_open": [ "phtml_1" ]
             },
-            "themes" : {
-              "theme" : "proton"
+            "themes": {
+                "theme": "proton"
             }
         }).bind("select_node.jstree", function (event, data) {
-            $("#oid").val('.' + data.rslt.obj.attr("oid"));
-        }); 
-        
+                    $("#oid").val('.' + data.rslt.obj.attr("oid") + '.0');
+                });
+
         $("#jstreecontainer li")
-  
+
         ip = $.getUrlParam('ip');
-        $("#current-ip").text('Current Agent IP:'+ ip);
-        $("#oid").keypress(function(event) {
-          if(event.keyCode == 13)
-            $("#op-get").click();
+        $("#current-ip").text('Current Agent IP:' + ip);
+        $("#oid").keypress(function (event) {
+            if (event.keyCode == 13)
+                $("#op-get").click();
         });
-      })
-    </script>
-    <script type="text/javascript" src="js/main.js"></script>
-  </body>
+
+        $("#current-ip").click(function(){
+            window.location.href = "index.html";
+        });
+    })
+</script>
+<script type="text/javascript" src="js/main.js"></script>
+</body>
 </html>
